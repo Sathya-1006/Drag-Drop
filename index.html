@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Website Builder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 200px;
+      background: #2c3e50;
+      color: white;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar div {
+      background: #34495e;
+      padding: 10px;
+      cursor: grab;
+      text-align: center;
+    }
+    .canvas {
+      flex: 1;
+      background: #ecf0f1;
+      position: relative;
+      overflow: auto;
+    }
+    .canvas-element {
+      position: absolute;
+      border: 1px dashed #aaa;
+      padding: 5px;
+      cursor: move;
+    }
+    .property-editor {
+      width: 250px;
+      background: #f7f7f7;
+      padding: 10px;
+    }
+    .property-editor input, .property-editor select {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar, .property-editor {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+      .canvas {
+        height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div draggable="true" data-type="text">Text</div>
+    <div draggable="true" data-type="image">Image</div>
+    <div draggable="true" data-type="button">Button</div>
+  </div>
+  <div class="canvas" id="canvas"></div>
+  <div class="property-editor" id="editor">
+    <h3>Properties</h3>
+    <input type="text" id="prop-text" placeholder="Text or URL" />
+    <input type="number" id="prop-size" placeholder="Font Size (px) or Width for Image" />
+    <input type="color" id="prop-color" />
+  </div>
+  <script>
+    const canvas = document.getElementById('canvas');
+    let selected = null;
+    let offsetX, offsetY;
+
+    document.querySelectorAll('.sidebar div').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('type', e.target.dataset.type);
+      });
+    });
+
+    canvas.addEventListener('dragover', (e) => e.preventDefault());
+
+    canvas.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const type = e.dataTransfer.getData('type');
+      if (type) {
+        const element = createElement(type);
+        element.style.left = `${e.offsetX}px`;
+        element.style.top = `${e.offsetY}px`;
+        canvas.appendChild(element);
+      } else if (selected && selected.classList.contains('canvas-element')) {
+        selected.style.left = `${e.offsetX - offsetX}px`;
+        selected.style.top = `${e.offsetY - offsetY}px`;
+      }
+    });
+
+    function createElement(type) {
+      let el;
+      switch(type) {
+        case 'text':
+          el = document.createElement('div');
+          el.textContent = 'Edit me';
+          break;
+        case 'image':
+          el = document.createElement('img');
+          el.src = 'https://via.placeholder.com/100';
+          el.style.width = '100px';
+          break;
+        case 'button':
+          el = document.createElement('button');
+          el.textContent = 'Click me';
+          break;
+      }
+      el.classList.add('canvas-element');
+      el.setAttribute('draggable', 'true');
+      el.addEventListener('click', () => selectElement(el));
+
+      el.addEventListener('dragstart', (e) => {
+        selected = el;
+        const rect = el.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        e.dataTransfer.setData('text/plain', '');
+      });
+
+      return el;
+    }
+
+    function selectElement(el) {
+      selected = el;
+      document.getElementById('prop-text').value = el.tagName === 'IMG' ? el.src : el.textContent;
+      if (el.tagName === 'IMG') {
+        document.getElementById('prop-size').value = parseInt(el.style.width) || 100;
+      } else {
+        document.getElementById('prop-size').value = parseInt(getComputedStyle(el).fontSize) || '';
+      }
+      document.getElementById('prop-color').value = rgb2hex(getComputedStyle(el).color || '#000000');
+    }
+
+    function rgb2hex(rgb) {
+      if (!rgb) return '#000000';
+      const result = rgb.match(/\d+/g);
+      return `#${result.map(x => (+x).toString(16).padStart(2, '0')).join('')}`;
+    }
+
+    document.getElementById('prop-text').addEventListener('input', (e) => {
+      if (!selected) return;
+      if (selected.tagName === 'IMG') selected.src = e.target.value;
+      else selected.textContent = e.target.value;
+    });
+
+    document.getElementById('prop-size').addEventListener('input', (e) => {
+      if (!selected) return;
+      if (selected.tagName === 'IMG') {
+        selected.style.width = `${e.target.value}px`;
+      } else {
+        selected.style.fontSize = `${e.target.value}px`;
+      }
+    });
+
+    document.getElementById('prop-color').addEventListener('input', (e) => {
+      if (!selected) return;
+      selected.style.color = e.target.value;
+    });
+  </script>
+</body>
+</html>
