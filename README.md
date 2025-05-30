@@ -22,7 +22,7 @@ This is a basic website builder created using only HTML, CSS, and plain JavaScri
 ## Live Demo
 
 Visit the working version of this builder:  
-[Live Demo](https://your-github-username.github.io/drag-drop-builder)
+[Live Demo](https://sathya-1006.github.io/Drag-Drop/)
 
 ## Demo Video
 
