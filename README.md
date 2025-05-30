@@ -19,6 +19,16 @@ This is a basic website builder created using only HTML, CSS, and plain JavaScri
 4. Use the editor to change the content, font size, colors, or image source.
 5. You can drag elements again to reposition them.
 
+## Images:
+![image](https://github.com/user-attachments/assets/e08a13c7-0873-4d88-b7a6-460bd2d78417)
+
+![image](https://github.com/user-attachments/assets/9acecbc7-f478-437f-be60-f4d558e6733f)
+
+![image](https://github.com/user-attachments/assets/b650f7cd-0466-4fc3-b39d-d08c7954cdf0)
+
+![image](https://github.com/user-attachments/assets/73bd9c67-04e1-4d97-8877-97618b204215)
+
+
 ## Live Demo
 
 Visit the working version of this builder:  
@@ -29,5 +39,4 @@ Visit the working version of this builder:
 Watch a short video showing how the builder works:  
 [Demo Video](https://your-video-link.com)
 
-## Project Files
 
